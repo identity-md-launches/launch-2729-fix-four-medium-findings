@@ -63,6 +63,7 @@
   const action = p.get("action") === "claimAndStake" ? "claimAndStake" : "claim";
   const $ = (id) => document.getElementById(id);
   let from = null;
+  let walletVersion = 0;
 
   $("h").textContent = action === "claim" ? "Claim your SQK" : "Claim + stake your SQK";
   $("what").textContent = action === "claim"
@@ -73,9 +74,41 @@
   const short = (a) => a.slice(0, 6) + "…" + a.slice(-4);
   const toSqk = (b) => Number(BigInt(b || "0") / 10n ** 15n) / 1000;
 
+  function resetWallet() {
+    walletVersion++;
+    from = null;
+    $("acct").textContent = "not connected";
+    $("go").textContent = "Connect wallet";
+    $("go").disabled = false;
+    say("");
+  }
+  if (window.ethereum?.on) {
+    ethereum.on("chainChanged", resetWallet);
+    ethereum.on("accountsChanged", resetWallet);
+  }
+
+  async function requireSepolia() {
+    let chainId;
+    try {
+      chainId = await ethereum.request({ method: "eth_chainId" });
+    } catch (e) {
+      resetWallet();
+      throw e;
+    }
+    if (chainId !== SEPOLIA) {
+      resetWallet();
+      say("Please switch your wallet to the Sepolia network and try again.", "err");
+      return false;
+    }
+    return true;
+  }
+
   async function loadClaimable(addr) {
     try {
-      const r = await (await fetch(`${API}/accounts/${addr.toLowerCase()}`)).json();
+      const response = await fetch(`${API}/accounts/${addr.toLowerCase()}`);
+      if (!response.ok) throw new Error("unavailable");
+      const r = await response.json();
+      if (r.status !== "available") throw new Error("unavailable");
       const n = toSqk(r.rewards?.claimableBaseUnits);
       $("amt").textContent = n.toLocaleString("en-US", { maximumFractionDigits: 2 });
       return n;
@@ -89,34 +122,45 @@
 
   async function connect() {
     if (!window.ethereum) return say("No wallet found. Open this page in a browser with MetaMask or Rabby.", "err");
+    resetWallet();
     const [a] = await ethereum.request({ method: "eth_requestAccounts" });
-    from = a;
-    $("acct").textContent = short(a);
+    if (!a) return;
     try {
       await ethereum.request({ method: "wallet_switchEthereumChain", params: [{ chainId: SEPOLIA }] });
     } catch (e) {
+      resetWallet();
       return say("Please switch your wallet to the Sepolia network and try again.", "err");
     }
+    const version = walletVersion;
+    const [current] = await ethereum.request({ method: "eth_accounts" });
+    if (current !== a || !(await requireSepolia()) || version !== walletVersion) return;
+    from = a;
+    $("acct").textContent = short(a);
     const watched = (p.get("account") || "").toLowerCase();
     if (watched && watched !== a.toLowerCase()) say(`Heads up: you're connected as ${short(a)}, not the watched ${short(watched)}. Claims go to the connected wallet.`);
     else say("");
     const n = await loadClaimable(a);
+    if (version !== walletVersion) return;
     $("go").textContent = action === "claim" ? "Claim SQK" : "Claim + stake";
     $("go").disabled = n === 0;
     if (n === 0) say("Nothing to claim for this wallet right now.");
   }
 
   async function send() {
+    const version = walletVersion;
     const tx = { from, to: STAKING, data: calldata(from), value: "0x0" };
     say("Checking the transaction…");
     try {
+      if (!(await requireSepolia()) || version !== walletVersion) return;
       await ethereum.request({ method: "eth_call", params: [tx, "latest"] });
     } catch (e) {
       return say("The contract would reject this right now (" + (e.message || "reverted").slice(0, 120) + "). Nothing was sent.", "err");
     }
     say("Confirm in your wallet…");
     try {
+      if (!(await requireSepolia()) || version !== walletVersion) return;
       const hash = await ethereum.request({ method: "eth_sendTransaction", params: [tx] });
+      if (version !== walletVersion) return;
       $("msg").innerHTML = `Sent! <a href="https://sepolia.etherscan.io/tx/${hash}" target="_blank" rel="noopener">view transaction ↗</a>`;
       $("msg").className = "ok";
       $("go").disabled = true;

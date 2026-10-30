@@ -1,0 +1,26 @@
+# Generated dependencies and caches: submission budget 0 bytes at every depth.
+node_modules/
+.npm/
+.cache/
+.vite/
+.pnpm-store/
+
+# Validation delivery allowlist, maximum 335872 bytes (328 KiB) in total:
+# artifacts/validation.md: 24576 bytes
+# artifacts/interaction-results.json: 16384 bytes
+# artifacts/taste-results.json: 16384 bytes
+# artifacts/screenshots/initial-390.png: 65536 bytes
+# artifacts/screenshots/holder-390.png: 81920 bytes
+# artifacts/screenshots/claim-unknown-390.png: 65536 bytes
+# artifacts/screenshots/claim-and-stake-unknown-390.png: 65536 bytes
+!artifacts/
+artifacts/*
+!artifacts/validation.md
+!artifacts/interaction-results.json
+!artifacts/taste-results.json
+!artifacts/screenshots/
+artifacts/screenshots/*
+!artifacts/screenshots/initial-390.png
+!artifacts/screenshots/holder-390.png
+!artifacts/screenshots/claim-unknown-390.png
+!artifacts/screenshots/claim-and-stake-unknown-390.png

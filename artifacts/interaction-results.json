@@ -1,0 +1,278 @@
+{
+  "fixtureMode": "Controlled API, EIP-1193 wallet and Chrome storage fixtures; no real transaction.",
+  "regressionChecksPassed": 31,
+  "regressions": [
+    {
+      "name": "three account pages merge tokens, pairs and cooldowns; encode cursor and lowercase address",
+      "passed": true
+    },
+    {
+      "name": "unavailable page invalidates entire account, including earlier tokens",
+      "passed": true
+    },
+    {
+      "name": "HTTP failure on later page rejects entire account",
+      "passed": true
+    },
+    {
+      "name": "network failure on later page rejects entire account",
+      "passed": true
+    },
+    {
+      "name": "JSON failure on later page rejects entire account",
+      "passed": true
+    },
+    {
+      "name": "unavailable first page and empty available account stop without pagination",
+      "passed": true
+    },
+    {
+      "name": "Chromium: rejected chain switch stays disconnected; second click never simulates or sends",
+      "passed": true
+    },
+    {
+      "name": "Chromium: wallet reporting wrong chain after successful switch is not connected",
+      "passed": true
+    },
+    {
+      "name": "Chromium: wrong network immediately before simulation blocks call and send",
+      "passed": true
+    },
+    {
+      "name": "Chromium: network changes during simulation without event: second chain read blocks send",
+      "passed": true
+    },
+    {
+      "name": "Chromium: chainChanged resets connected state and enables reconnect",
+      "passed": true
+    },
+    {
+      "name": "Chromium: chainChanged during pending simulation invalidates transaction",
+      "passed": true
+    },
+    {
+      "name": "Chromium: accountsChanged resets connected state and enables reconnect",
+      "passed": true
+    },
+    {
+      "name": "Chromium: accountsChanged during pending simulation invalidates transaction",
+      "passed": true
+    },
+    {
+      "name": "Chromium: unreadable chain resets wallet and never calls contract",
+      "passed": true
+    },
+    {
+      "name": "Chromium: late chain event between check and continuation at read 1 blocks stale connection or send",
+      "passed": true
+    },
+    {
+      "name": "Chromium: late chain event between check and continuation at read 2 blocks stale connection or send",
+      "passed": true
+    },
+    {
+      "name": "Chromium: late chain event between check and continuation at read 3 blocks stale connection or send",
+      "passed": true
+    },
+    {
+      "name": "Chromium: account event during pending wallet confirmation cannot restore old connected UI",
+      "passed": true
+    },
+    {
+      "name": "Chromium: claim simulation and send each immediately follow Sepolia check",
+      "passed": true
+    },
+    {
+      "name": "Chromium: claimAndStake simulation and send each immediately follow Sepolia check",
+      "passed": true
+    },
+    {
+      "name": "Chromium: failed simulation sends nothing; cancelled signing leaves claim enabled",
+      "passed": true
+    },
+    {
+      "name": "Chromium: http claimable response shows ? and leaves Claim enabled",
+      "passed": true
+    },
+    {
+      "name": "Chromium: unavailable claimable response shows ? and leaves Claim enabled",
+      "passed": true
+    },
+    {
+      "name": "Chromium: network claimable response shows ? and leaves Claim enabled",
+      "passed": true
+    },
+    {
+      "name": "Chromium: json claimable response shows ? and leaves Claim enabled",
+      "passed": true
+    },
+    {
+      "name": "Chromium: available zero disables Claim; account event re-enables Connect",
+      "passed": true
+    },
+    {
+      "name": "Chromium: account change during claimable fetch cannot restore old connection",
+      "passed": true
+    },
+    {
+      "name": "Chromium: website primary interactions, pagination, visible product and responsive layouts",
+      "passed": true
+    },
+    {
+      "name": "Chromium: holder automatically refreshes at 60s and on return to visible; editing is preserved",
+      "passed": true
+    },
+    {
+      "name": "Chromium: extension storage changes refresh holder and alert settings; other storage areas ignored",
+      "passed": true
+    }
+  ],
+  "unperformed": [
+    {
+      "name": "WebKit browser checks",
+      "reason": "Launch failed because required GTK/GStreamer and related system libraries were unavailable."
+    }
+  ],
+  "responsiveChecksPassed": 11,
+  "responsiveAndStateChecks": [
+    {
+      "name": "initial 390 product, Watch wallet and metadata",
+      "passed": true,
+      "geometry": {
+        "h1Bottom": 138.78125,
+        "watchBottom": 440.9375,
+        "description": true,
+        "favicon": true,
+        "ogTitle": true,
+        "ogImage": true
+      }
+    },
+    {
+      "name": "claim unavailable state at 320",
+      "passed": true,
+      "geometry": {
+        "scroll": 320,
+        "width": 320,
+        "actionBottom": 539
+      }
+    },
+    {
+      "name": "claim unavailable state at 390",
+      "passed": true,
+      "geometry": {
+        "scroll": 390,
+        "width": 390,
+        "actionBottom": 522.5
+      }
+    },
+    {
+      "name": "claim unavailable state at 768",
+      "passed": true,
+      "geometry": {
+        "scroll": 768,
+        "width": 768,
+        "actionBottom": 531.5
+      }
+    },
+    {
+      "name": "claim unavailable state at 1440",
+      "passed": true,
+      "geometry": {
+        "scroll": 1440,
+        "width": 1440,
+        "actionBottom": 531.5
+      }
+    },
+    {
+      "name": "claim unavailable read still permits chain-protected simulation path",
+      "passed": true
+    },
+    {
+      "name": "claimAndStake unavailable state at 320",
+      "passed": true,
+      "geometry": {
+        "scroll": 320,
+        "width": 320,
+        "actionBottom": 548.75
+      }
+    },
+    {
+      "name": "claimAndStake unavailable state at 390",
+      "passed": true,
+      "geometry": {
+        "scroll": 390,
+        "width": 390,
+        "actionBottom": 547.25
+      }
+    },
+    {
+      "name": "claimAndStake unavailable state at 768",
+      "passed": true,
+      "geometry": {
+        "scroll": 768,
+        "width": 768,
+        "actionBottom": 541.25
+      }
+    },
+    {
+      "name": "claimAndStake unavailable state at 1440",
+      "passed": true,
+      "geometry": {
+        "scroll": 1440,
+        "width": 1440,
+        "actionBottom": 541.25
+      }
+    },
+    {
+      "name": "claimAndStake unavailable read still permits chain-protected simulation path",
+      "passed": true
+    },
+    {
+      "name": "computed action typography",
+      "styles": {
+        "body": {
+          "family": "Inter, \"Segoe UI\", system-ui, sans-serif",
+          "size": "15px",
+          "weight": "400",
+          "lineHeight": "22.5px",
+          "color": "rgb(242, 238, 230)"
+        },
+        "h1": {
+          "family": "Inter, \"Segoe UI\", system-ui, sans-serif",
+          "size": "20px",
+          "weight": "700",
+          "lineHeight": "30px",
+          "color": "rgb(242, 238, 230)"
+        },
+        ".muted": {
+          "family": "Inter, \"Segoe UI\", system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px",
+          "color": "rgb(140, 138, 147)"
+        },
+        ".amount": {
+          "family": "Inter, \"Segoe UI\", system-ui, sans-serif",
+          "size": "34px",
+          "weight": "800",
+          "lineHeight": "51px",
+          "color": "rgb(242, 238, 230)"
+        },
+        "button": {
+          "family": "Arial",
+          "size": "13.3333px",
+          "weight": "400",
+          "lineHeight": "normal",
+          "color": "rgb(21, 21, 27)"
+        },
+        ".fine": {
+          "family": "Inter, \"Segoe UI\", system-ui, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "lineHeight": "18px",
+          "color": "rgb(140, 138, 147)"
+        }
+      }
+    }
+  ]
+}

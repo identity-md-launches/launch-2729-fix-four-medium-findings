@@ -53,8 +53,10 @@ document.querySelectorAll(".tabs button").forEach((b) => b.addEventListener("cli
 
 // ---------- My Squeeks ----------
 let watched = null;
+let holderRequest = 0;
 
 function showWatchForm(prefill = "") {
+  holderRequest++;
   $("holder").classList.add("hidden");
   $("watchForm").classList.remove("hidden");
   $("addr").value = prefill;
@@ -115,7 +117,9 @@ function renderHolder(s, settings) {
 }
 
 async function loadHolder() {
+  const request = ++holderRequest;
   const settings = await store.get();
+  if (request !== holderRequest) return;
   watched = settings.watch || null;
   if (!watched) return showWatchForm();
   $("watchForm").classList.add("hidden");
@@ -123,12 +127,18 @@ async function loadHolder() {
   $("whoAddr").textContent = shortAddr(watched);
   try {
     const s = summarize(await fetchAccount(watched));
+    if (request !== holderRequest) return;
     if (!s) throw new Error("unavailable");
     $("holderErr").textContent = "";
     renderHolder(s, settings);
   } catch (e) {
+    if (request !== holderRequest) return;
     $("holderErr").textContent = "Couldn't load this wallet right now. Try again in a minute.";
   }
+}
+
+function refreshHolder() {
+  if (!$("holder").classList.contains("hidden")) loadHolder();
 }
 
 // ---------- Hamster ----------
@@ -180,4 +190,17 @@ async function loadAlerts() {
   loadWheel();
   if (hasChrome) chrome.runtime.sendMessage({ type: "refresh" }).catch(() => {});
   setInterval(loadWheel, 15000);
+  setInterval(refreshHolder, 60000);
 })();
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") refreshHolder();
+});
+if (hasChrome) {
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area !== "local") return;
+    if (changes.watch) loadHolder();
+    else refreshHolder();
+    loadAlerts();
+  });
+}

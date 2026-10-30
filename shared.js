@@ -15,7 +15,20 @@ async function getJson(path) {
 
 export const fetchStatus = () => getJson("/status");
 export const fetchSettlements = () => getJson("/settlements?range=24h");
-export const fetchAccount = (addr) => getJson(`/accounts/${addr.toLowerCase()}`);
+export async function fetchAccount(addr) {
+  const path = `/accounts/${addr.toLowerCase()}`;
+  const account = await getJson(path);
+  if (account.status !== "available") return account;
+  const tokens = [...(account.tokens || [])];
+  let cursor = account.nextCursor;
+  while (cursor != null) {
+    const page = await getJson(`${path}?cursor=${encodeURIComponent(cursor)}`);
+    if (page.status !== "available") return page;
+    tokens.push(...(page.tokens || []));
+    cursor = page.nextCursor;
+  }
+  return { ...account, tokens, nextCursor: null };
+}
 
 export const isAddress = (s) => /^0x[0-9a-fA-F]{40}$/.test((s || "").trim());
 export const shortAddr = (a) => (a ? `${a.slice(0, 6)}…${a.slice(-4)}` : "");
