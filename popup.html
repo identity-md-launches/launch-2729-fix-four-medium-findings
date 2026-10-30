@@ -2,46 +2,106 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Squeektoshi Status</title>
+  <title>Squeek Keeper</title>
   <link rel="stylesheet" href="popup.css" />
 </head>
 <body>
-  <header>
-    <img id="face" src="icons/idle-128.png" alt="" width="56" height="56" />
-    <div>
-      <h1 id="title">Checking the wheel…</h1>
-      <p id="sub">one sec</p>
-    </div>
-  </header>
+  <nav class="tabs" role="tablist">
+    <button role="tab" data-tab="squeeks" class="active">My Squeeks</button>
+    <button role="tab" data-tab="wheel">Hamster</button>
+    <button role="tab" data-tab="alerts">Alerts</button>
+  </nav>
 
-  <section class="grid">
-    <div class="stat"><span class="label">speed</span><span class="val" id="speed">–</span></div>
-    <div class="stat"><span class="label">distance today</span><span class="val" id="distance">–</span></div>
-    <div class="stat"><span class="label">block height</span><span class="val" id="height">–</span></div>
-    <div class="stat"><span class="label">last ran</span><span class="val" id="lastRun">–</span></div>
+  <!-- ===== My Squeeks ===== -->
+  <section id="tab-squeeks" class="panel active">
+    <form id="watchForm" class="watch hidden">
+      <p class="hint">Paste the wallet that holds your Squeeks. Read-only: no connect, no signing.</p>
+      <input id="addr" placeholder="0x…" spellcheck="false" autocomplete="off" />
+      <button type="submit" class="btn primary">Watch wallet</button>
+      <p id="addrErr" class="err"></p>
+    </form>
+
+    <div id="holder" class="hidden">
+      <div class="who">
+        <span id="whoAddr"></span>
+        <button id="changeAddr" class="link">change</button>
+      </div>
+
+      <div class="claim card">
+        <div>
+          <span class="label">ready to claim</span>
+          <span class="big"><b id="claimable">–</b> SQK</span>
+          <span class="muted" id="today"></span>
+        </div>
+        <div class="actions">
+          <button class="btn primary" data-act="claim">Claim</button>
+          <button class="btn" data-act="claimAndStake" title="Claim and stake it straight back for more power">Claim + stake</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="row-head">
+          <span class="label">merges</span>
+          <span id="mergeHint" class="muted"></span>
+        </div>
+        <ul id="pairs" class="pairs"></ul>
+        <button id="mergeBtn" class="btn wide hidden">Merge in the Squeekchain app ↗</button>
+      </div>
+
+      <div class="grid">
+        <div class="stat"><span class="label">squeeks</span><span class="val" id="count">–</span></div>
+        <div class="stat"><span class="label">power</span><span class="val" id="power">–</span></div>
+      </div>
+
+      <div class="card">
+        <div class="row-head"><span class="label">earned, last 7 days</span><span class="muted" id="week"></span></div>
+        <div id="earnBars" class="bars short"></div>
+      </div>
+      <p id="holderErr" class="err"></p>
+    </div>
   </section>
 
-  <section class="day">
-    <div class="day-head">
-      <span class="label">last 24h</span>
-      <span class="totals"><b id="blocks24">–</b> blocks · <b id="sqk24">–</b> SQK</span>
+  <!-- ===== Hamster ===== -->
+  <section id="tab-wheel" class="panel">
+    <header>
+      <img id="face" src="icons/idle-128.png" alt="" width="52" height="52" />
+      <div>
+        <h1 id="title">Checking the wheel…</h1>
+        <p id="sub">one sec</p>
+      </div>
+    </header>
+    <div class="grid">
+      <div class="stat"><span class="label">speed</span><span class="val" id="speed">–</span></div>
+      <div class="stat"><span class="label">distance today</span><span class="val" id="distance">–</span></div>
+      <div class="stat"><span class="label">block height</span><span class="val" id="height">–</span></div>
+      <div class="stat"><span class="label">last ran</span><span class="val" id="lastRun">–</span></div>
     </div>
-    <div id="bars" class="bars" aria-label="Work per hour, last 24 hours"></div>
-    <div class="axis"><span>24h ago</span><span>now</span></div>
+    <div class="card">
+      <div class="row-head">
+        <span class="label">last 24h</span>
+        <span class="muted"><b id="blocks24">–</b> blocks · <b id="sqk24">–</b> SQK</span>
+      </div>
+      <div id="bars" class="bars"></div>
+      <div class="axis"><span>24h ago</span><span>now</span></div>
+    </div>
   </section>
 
-  <label class="toggle">
-    <input type="checkbox" id="notify" checked />
-    <span>ping me when Squeektoshi wakes up</span>
-  </label>
+  <!-- ===== Alerts ===== -->
+  <section id="tab-alerts" class="panel">
+    <p class="hint">Squeek Keeper checks in the background and pings you. You don't need to keep anything open.</p>
+    <label class="toggle"><input type="checkbox" id="notifyMerge" /> <span>Squeeks ready to merge</span></label>
+    <label class="toggle"><input type="checkbox" id="notifyClaim" /> <span>claimable SQK passes
+      <input type="number" id="claimThreshold" min="1" step="1" class="num" /> SQK</span></label>
+    <label class="toggle"><input type="checkbox" id="notify" /> <span>Squeektoshi wakes up</span></label>
+    <p class="muted small">The toolbar badge shows a number when something needs you.</p>
+  </section>
 
   <footer>
     <a href="https://x.com/squeektoshi" target="_blank" rel="noopener">watch the hamster</a>
     <span>·</span>
-    <a href="https://docs.squeekchain.com" target="_blank" rel="noopener">docs</a>
+    <a href="https://github.com/olric3015/squeektoshi-status" target="_blank" rel="noopener">about</a>
     <span class="net">sepolia testnet</span>
   </footer>
-  <p id="updated" class="updated"></p>
 
   <script type="module" src="popup.js"></script>
 </body>

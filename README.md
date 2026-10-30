@@ -1,43 +1,61 @@
-# Squeektoshi Status 🐹
+# Squeek Keeper 🐹
 
-A tiny Chrome extension that answers one question: **is the hamster running?**
+**A Chrome extension that watches your Squeeks for you and pings you when there's something to do.**
 
-[Squeekchain](https://docs.squeekchain.com) is a proof-of-work toychain on Ethereum where a real hamster, Squeektoshi, mines the blocks on his wheel. No running, no blocks. This extension puts his status in your browser toolbar so you always know when the chain is alive.
+[Squeekchain](https://docs.squeekchain.com) is a proof-of-work toychain on Ethereum where a real hamster, Squeektoshi, mines the blocks. Squeek NFTs share the SQK he mines, and two same-level Squeeks can merge into a stronger one once their cooldowns end. Dashboards show you all of this, but only when you go and look. Squeek Keeper sits in your toolbar and tells you the moment it matters.
 
 ![preview](docs/preview.png)
 
 ## What it does
 
-- **Toolbar icon** that changes with the wheel: green when Squeektoshi is running, sleepy when he's napping, grey when the sensor is offline
-- **Wake-up ping**: a desktop notification the moment he starts running (you can turn it off)
-- **Popup** with live speed, today's distance, block height and when he last ran
-- **Last 24h chart** of work per hour, plus blocks completed and SQK issued
+**Alerts, in the background (nothing needs to stay open)**
+- 🔀 **Merge ready**: two of your same-level Squeeks are both off cooldown
+- 💰 **Claim ready**: your claimable SQK passes the amount you set (default 100)
+- 🐹 **Squeektoshi woke up**: the wheel just started spinning
+- The toolbar badge shows a number when something needs you
+
+**Act on it in one click**
+- **Claim** or **Claim + stake** your SQK. The button opens a small signing page, your wallet shows the transaction, you sign. The page simulates the call first and refuses to send anything that would fail.
+- **Merge** shows exactly which two Squeeks to pick, then opens the official Squeekchain app
+
+**At a glance**
+- Your Squeeks, total power, claimable SQK, last 7 days of earnings
+- Which pairs can merge now, or how many blocks until the next cooldown ends
+- Live hamster status: running / napping / offline, speed, distance, last 24h of work
 
 ## Install (2 minutes)
 
-1. Download this repo: **Code → Download ZIP**, then unzip it
-2. Open `chrome://extensions` in Chrome (or Brave / Edge)
+1. **Code → Download ZIP** on this page, then unzip it
+2. Open `chrome://extensions` (Chrome, Brave or Edge)
 3. Turn on **Developer mode** (top right)
-4. Click **Load unpacked** and pick the unzipped folder (the one that has `manifest.json` inside)
-5. Pin it from the puzzle icon in the toolbar
+4. Click **Load unpacked** and pick the unzipped folder (the one with `manifest.json` inside)
+5. Pin it from the puzzle icon, open it and paste the wallet that holds your Squeeks
+
+Watching a wallet is read-only: no wallet connection, no signature. Your wallet is only involved when you press Claim.
 
 ## How it works
 
-- Reads the public, read-only [Squeekchain API](https://docs.squeekchain.com/developers/api/) (`/v1/status` and `/v1/settlements`) once a minute
-- No wallet, no keys, no transactions, no tracking. The only network host it talks to is `api.squeekchain.com`
-- Plain JavaScript, no build step, no dependencies
-
-| File | Purpose |
+| Part | What it does |
 |---|---|
-| `manifest.json` | Manifest V3 config and permissions |
-| `background.js` | Polls the API every minute, updates the icon and sends the wake-up ping |
-| `popup.html` / `popup.css` / `popup.js` | The stats popup |
-| `shared.js` | API calls and the running / napping / offline logic |
+| `background.js` | Every minute checks the wheel; every 5 minutes checks the watched wallet. Fires an alert only when something changes (a new ready pair, claimable crossing your threshold, the hamster waking up), so you aren't spammed |
+| `popup.*` | The three tabs: My Squeeks, Hamster, Alerts |
+| `shared.js` | API calls and the logic that turns account data into merge pairs, cooldowns and totals |
+| `act.html` | The signing page for Claim / Claim + stake, served by GitHub Pages so your wallet extension can reach it |
+
+**Data**: the public [Squeekchain API](https://docs.squeekchain.com/developers/api/): `/v1/status`, `/v1/settlements`, `/v1/accounts/{address}`.
+
+**Transactions** (Sepolia, `SqueekStaking` proxy `0x4b67b739dfd832f4eac67a7aa3bc244fb74cea4f`):
+- Claim: `claim(address)` with your own address (`0x1e83409a`)
+- Claim + stake: `claimAndStake()` (`0xcb1a4fc0`)
+
+These selectors were read from the deployed contract's bytecode and match successful claims on Sepolia. The contract isn't verified on explorers yet, so merging is left to the official app instead of guessing at an unpublished function. When the team publishes the staking ABI, merge moves into the extension too.
+
+**Privacy**: no accounts, no analytics, no servers of ours. The only hosts it talks to are `api.squeekchain.com` and, when you press Claim, your own wallet.
 
 ## Notes
 
-- Squeekchain is currently on the **Sepolia testnet**, so all numbers are testnet data
-- "Running" means the wheel sensor reports `ACTIVE` or a speed above zero. "Offline" means the sensor hasn't reported within its freshness window
-- Community project, not affiliated with the Squeekchain team
+- Squeekchain is on the **Sepolia testnet** right now, so everything here is testnet. Addresses will be updated for mainnet.
+- Plain JavaScript, Manifest V3, no build step, no dependencies.
+- Community project, not affiliated with the Squeekchain team.
 
 Built by [@OlricOnlyfornft](https://x.com/OlricOnlyfornft). MIT licensed.
