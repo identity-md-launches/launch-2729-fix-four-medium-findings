@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Squeek Keeper</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Alerts and one-click claims for Squeekchain Squeek holders." />
+  <style>
+    html { background: #0f0f14; }
+    body.page { width: 100%; max-width: 420px; margin: 0 auto; padding: 0 16px 24px; }
+    .hero { text-align: center; padding: 26px 0 14px; }
+    .hero img { width: 64px; height: 64px; border-radius: 16px; }
+    .hero h1 { font-size: 24px; margin: 10px 0 4px; }
+    .hero p { color: #8c8a93; margin: 0 0 14px; font-size: 13.5px; }
+    .app { background: #15151b; border: 1px solid #2e2e39; border-radius: 18px; padding: 0 14px 12px; overflow: hidden; }
+    .app .tabs { margin: 0 -14px 12px; }
+    .cta { display: inline-block; background: #e8b84a; color: #15151b; font-weight: 700; text-decoration: none; padding: 10px 16px; border-radius: 10px; font-size: 13.5px; }
+    .web-note { color: #8c8a93; font-size: 12px; text-align: center; margin-top: 12px; }
+  </style>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body class="page">
+  <div class="hero">
+    <img src="icons/run-128.png" alt="" />
+    <h1>Squeek Keeper</h1>
+    <p>Know when your Squeeks can merge, when SQK is ready to claim, and when Squeektoshi starts running.</p>
+    <a class="cta" href="https://github.com/olric3015/squeektoshi-status#install-2-minutes" target="_blank" rel="noopener">Get the Chrome extension for alerts</a>
+  </div>
+  <div class="app">
+  <nav class="tabs" role="tablist">
+    <button role="tab" data-tab="squeeks" class="active">My Squeeks</button>
+    <button role="tab" data-tab="wheel">Hamster</button>
+    <button role="tab" data-tab="alerts">Alerts</button>
+  </nav>
+
+  <!-- ===== My Squeeks ===== -->
+  <section id="tab-squeeks" class="panel active">
+    <form id="watchForm" class="watch hidden">
+      <p class="hint">Paste the wallet that holds your Squeeks. Read-only: no connect, no signing.</p>
+      <input id="addr" placeholder="0x…" spellcheck="false" autocomplete="off" />
+      <button type="submit" class="btn primary">Watch wallet</button>
+      <p id="addrErr" class="err"></p>
+    </form>
+
+    <div id="holder" class="hidden">
+      <div class="who">
+        <span id="whoAddr"></span>
+        <button id="changeAddr" class="link">change</button>
+      </div>
+
+      <div class="claim card">
+        <div>
+          <span class="label">ready to claim</span>
+          <span class="big"><b id="claimable">–</b> SQK</span>
+          <span class="muted" id="today"></span>
+        </div>
+        <div class="actions">
+          <button class="btn primary" data-act="claim">Claim</button>
+          <button class="btn" data-act="claimAndStake" title="Claim and stake it straight back for more power">Claim + stake</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="row-head">
+          <span class="label">merges</span>
+          <span id="mergeHint" class="muted"></span>
+        </div>
+        <ul id="pairs" class="pairs"></ul>
+        <button id="mergeBtn" class="btn wide hidden">Merge in the Squeekchain app ↗</button>
+      </div>
+
+      <div class="grid">
+        <div class="stat"><span class="label">squeeks</span><span class="val" id="count">–</span></div>
+        <div class="stat"><span class="label">power</span><span class="val" id="power">–</span></div>
+      </div>
+
+      <div class="card">
+        <div class="row-head"><span class="label">earned, last 7 days</span><span class="muted" id="week"></span></div>
+        <div id="earnBars" class="bars short"></div>
+      </div>
+      <p id="holderErr" class="err"></p>
+    </div>
+  </section>
+
+  <!-- ===== Hamster ===== -->
+  <section id="tab-wheel" class="panel">
+    <header>
+      <img id="face" src="icons/idle-128.png" alt="" width="52" height="52" />
+      <div>
+        <h1 id="title">Checking the wheel…</h1>
+        <p id="sub">one sec</p>
+      </div>
+    </header>
+    <div class="grid">
+      <div class="stat"><span class="label">speed</span><span class="val" id="speed">–</span></div>
+      <div class="stat"><span class="label">distance today</span><span class="val" id="distance">–</span></div>
+      <div class="stat"><span class="label">block height</span><span class="val" id="height">–</span></div>
+      <div class="stat"><span class="label">last ran</span><span class="val" id="lastRun">–</span></div>
+    </div>
+    <div class="card">
+      <div class="row-head">
+        <span class="label">last 24h</span>
+        <span class="muted"><b id="blocks24">–</b> blocks · <b id="sqk24">–</b> SQK</span>
+      </div>
+      <div id="bars" class="bars"></div>
+      <div class="axis"><span>24h ago</span><span>now</span></div>
+    </div>
+  </section>
+
+  <!-- ===== Alerts ===== -->
+  <section id="tab-alerts" class="panel">
+    <p class="hint">Squeek Keeper checks in the background and pings you. You don't need to keep anything open.</p>
+    <label class="toggle"><input type="checkbox" id="notifyMerge" /> <span>Squeeks ready to merge</span></label>
+    <label class="toggle"><input type="checkbox" id="notifyClaim" /> <span>claimable SQK passes
+      <input type="number" id="claimThreshold" min="1" step="1" class="num" /> SQK</span></label>
+    <label class="toggle"><input type="checkbox" id="notify" /> <span>Squeektoshi wakes up</span></label>
+    <p class="muted small">Alerts run in the Chrome extension. The toolbar badge shows a number when something needs you.</p>
+  </section>
+
+  <footer>
+    <a href="https://x.com/squeektoshi" target="_blank" rel="noopener">watch the hamster</a>
+    <span>·</span>
+    <a href="https://github.com/olric3015/squeektoshi-status" target="_blank" rel="noopener">about</a>
+    <span class="net">sepolia testnet</span>
+  </footer>
+
+  </div>
+  <p class="web-note">This page is the web version: it updates while open. The extension keeps watching in the background and pings you.</p>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

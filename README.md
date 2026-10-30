@@ -40,6 +40,7 @@ Watching a wallet is read-only: no wallet connection, no signature. Your wallet 
 | `background.js` | Every minute checks the wheel; every 5 minutes checks the watched wallet. Fires an alert only when something changes (a new ready pair, claimable crossing your threshold, the hamster waking up), so you aren't spammed |
 | `popup.*` | The three tabs: My Squeeks, Hamster, Alerts |
 | `shared.js` | API calls and the logic that turns account data into merge pairs, cooldowns and totals |
+| `index.html` | Web version of Squeek Keeper (same app in a page, live at olric3015.github.io/squeektoshi-status) |
 | `act.html` | The signing page for Claim / Claim + stake, served by GitHub Pages so your wallet extension can reach it |
 
 **Data**: the public [Squeekchain API](https://docs.squeekchain.com/developers/api/): `/v1/status`, `/v1/settlements`, `/v1/accounts/{address}`.
